@@ -1,0 +1,11 @@
+#BlueJ class context
+comment0.target=Sudoku
+comment1.params=values
+comment1.target=Sudoku(int[][])
+comment2.params=i\ j\ value
+comment2.target=void\ setValue(int,\ int,\ int)
+comment3.params=i\ j
+comment3.target=int\ getValue(int,\ int)
+comment4.params=i\ j
+comment4.target=boolean\ isWritable(int,\ int)
+numComments=5
