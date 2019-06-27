@@ -187,4 +187,37 @@ public class CharacterSearchTree
         }
         return max;
     }
+    
+    // Aufgabe 19
+    public static void test_A19() {
+        CharacterSearchTree cst = new CharacterSearchTree();
+        cst.add('h');
+        cst.add('f');
+        cst.add('x');
+        cst.add('d');
+        cst.add('g');
+        cst.add('m');
+        cst.add('z');
+        cst.add('c');
+        cst.add('l');
+        cst.add('p');
+        cst.add('y');
+        cst.breadthFirstTraversal();
+    }
+    public void breadthFirstTraversal() {
+        RingBuffer<CharacterSearchTree> rb 
+            = new RingBuffer(new CharacterSearchTree[(int) Math.pow(2, depth() - 1)]);
+        CharacterSearchTree cst = this;
+        while (true) {
+            if (!cst.isEmpty()) {
+                System.out.println(cst.getContent().getToken());
+                rb.push(cst.leftChild);
+                rb.push(cst.rightChild);
+            }
+            if (rb.isEmpty()) {
+                return;
+            }
+            cst = rb.pop();
+        }
+    }
 }

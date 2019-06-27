@@ -26,6 +26,8 @@ public class RingBuffer<O> {
         System.out.println(rb.toString());
         rb.pop();
         System.out.println(rb.toString());
+        rb.pop();
+        System.out.println(rb.toString());
         rb.push(11);
         System.out.println(rb.toString());
         rb.push(12);
@@ -35,13 +37,14 @@ public class RingBuffer<O> {
     }
 
     private O[] buffer;
-    private int index; // naechster zu blegender
+    private int index = 0; // naechster zu belegender Index
+    private int oldest = -1; // Index mit dem aeltesten Wert, -1 == es gibt keinen ältesten Wert
     
     public RingBuffer(O[] buffer) {
         this.buffer = buffer;
     }
     
-    private int incrementIndex() {
+    private int increment(int index) {
         int i = index + 1;
         if (i >= size()) {
             i = 0;
@@ -49,7 +52,7 @@ public class RingBuffer<O> {
         return i;
     }
     
-    private int decrementIndex() {
+    private int decrement(int index) {
         int i = index - 1;
         if (i < 0) {
             i = size() - 1;
@@ -58,33 +61,60 @@ public class RingBuffer<O> {
     }
     
     public O pop() {
+        if (oldest == -1) {
+            throw new IllegalStateException();
+        }
+        
         O ret = peek();
-        index = decrementIndex();
-        buffer[index] = null;
+        buffer[oldest] = null;
+        
+        oldest = increment(oldest);
+        if (oldest == index) {
+            oldest = -1;
+        }
+        
         return ret;
     }
     
     public O peek() {
-        return buffer[decrementIndex()];
+        if (oldest == -1) {
+            throw new IllegalStateException();
+        }
+        return buffer[oldest];
     }
     
     public void push(O s) {
+        if (oldest == -1) {
+            oldest = index;
+        } else if (oldest == index) {
+            oldest = increment(oldest);
+        }
         buffer[index] = s;
-        index = incrementIndex();
+        index = increment(index);
     }
-        
+    
     public int size() {
         return buffer.length;
     }
     
     public int countElements() {
+        if (oldest == -1) {
+            return 0;
+        } else if (oldest == index) {
+            return size();
+        }
+        int i = oldest;
         int count = 0;
-        for (O o : buffer) {
-            if (o != null) {
-                count++;
-            }
+        while (i != index) {
+            count++;
+            i = increment(i);
         }
         return count;
+    }
+    
+    // Aufgabe 19
+    public boolean isEmpty() {
+        return countElements() == 0;
     }
     
     @Override
@@ -94,7 +124,7 @@ public class RingBuffer<O> {
             s += o + ", ";
         }
         s += "\n";
-        s += "index: "+index;
+        s += "oldest: "+oldest+", index: "+index;
         s += "\n";
         return s;
     }
